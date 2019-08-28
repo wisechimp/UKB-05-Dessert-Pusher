@@ -18,7 +18,6 @@ package com.example.android.dessertpusher
 
 import android.content.ActivityNotFoundException
 import android.os.Bundle
-import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
@@ -63,6 +62,7 @@ class MainActivity : AppCompatActivity(), LifecycleObserver {
             Dessert(R.drawable.oreo, 6000, 20000)
     )
     private var currentDessert = allDesserts[0]
+    private lateinit var dessertTimer: DessertTimer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -71,7 +71,6 @@ class MainActivity : AppCompatActivity(), LifecycleObserver {
 
         // Use Data Binding to get reference to the views
         binding = DataBindingUtil.setContentView(this, R.layout.activity_main)
-
         binding.dessertButton.setOnClickListener {
             onDessertClicked()
         }
@@ -82,16 +81,19 @@ class MainActivity : AppCompatActivity(), LifecycleObserver {
 
         // Make sure the correct dessert is showing
         binding.dessertButton.setImageResource(currentDessert.imageId)
-    }
 
-    override fun onStart() {
-        super.onStart()
-        Timber.i("onStart started")
+        dessertTimer = DessertTimer()
     }
 
     override fun onRestart() {
         super.onRestart()
         Timber.i("onRestart restarted")
+    }
+
+    override fun onStart() {
+        super.onStart()
+        Timber.i("onStart started")
+        dessertTimer.startTimer()
     }
 
     override fun onResume() {
@@ -104,14 +106,15 @@ class MainActivity : AppCompatActivity(), LifecycleObserver {
         Timber.i("Hold on a minute")
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        Timber.i("All is lost")
-    }
-
     override fun onStop() {
         super.onStop()
         Timber.i("onStopped")
+        dessertTimer.stopTimer()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Timber.i("All is lost")
     }
 
     /**
